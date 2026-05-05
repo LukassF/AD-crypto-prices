@@ -29,7 +29,7 @@ Project for the Advanced Databases course. This repository collects cryptocurren
 python -m venv .venv
 source .venv/bin/activate
 
-./init_env.py
+python3 ./init_env.py
 ```
 
 2. Install dependencies:
