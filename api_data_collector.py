@@ -43,16 +43,17 @@ def backfill_coin_missing_data(coin_id, ticker):
     db = SessionLocal()
     last_entry = (
         db.query(CryptoPrice)
-        .filter(CryptoPrice.ticker == coin_id)
+        .filter(CryptoPrice.ticker == ticker.upper())
         .order_by(CryptoPrice.timestamp.desc())
         .first()
     )
 
-    if not last_entry:
-        return
-
-    start_ts = int(last_entry.timestamp.timestamp())
     end_ts = int(datetime.now(timezone.utc).timestamp())
+
+    if not last_entry:
+        start_ts = end_ts - (7 * 24 * 60 * 60)
+    else:
+        start_ts = int(last_entry.timestamp.timestamp())
 
     if end_ts - start_ts < 600:
         db.close()
@@ -85,6 +86,7 @@ def backfill_coin_missing_data(coin_id, ticker):
 def backfill_all():
     for coin_id, ticker in zip(COIN_IDS, COIN_TICKERS):
         backfill_coin_missing_data(coin_id, ticker)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
